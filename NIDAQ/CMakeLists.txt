@@ -1,0 +1,17 @@
+# File: CMakeListst.txt for module NIDAQ
+PROJECT(NIDAQ)
+
+# Use MRPT:
+FIND_PACKAGE( MRPT REQUIRED base hwdrivers)
+
+INCLUDE_DIRECTORIES( ${MOOS_INCLUDE_DIRS}  )
+LINK_DIRECTORIES( ${MOOS_LIBRARY_DIRS} )
+
+# Add executable
+ADD_EXECUTABLE( ${PROJECT_NAME}
+	main.cpp
+	CNIDAQApp.h CNIDAQApp.cpp
+	)
+
+# Link the executable
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MOOS_LIBRARIES} ${MRPT_LIBS} )

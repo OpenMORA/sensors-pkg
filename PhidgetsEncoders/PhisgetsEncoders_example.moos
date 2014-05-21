@@ -1,0 +1,41 @@
+
+ProcessConfig = ANTLER
+{
+	MSBetweenLaunches 	= 200
+	
+	//crucial processes
+	Run = MOOSDB        @  NewConsole = false
+
+	Run = PhidgetsEncoders  @       NewConsole=false
+	
+	// Optional logger:
+	 Run = pLogger  @       NewConsole=false
+}
+
+ProcessConfig = MOOSDB 
+{
+	// Enable webserver in MOOSDB
+	WEBSERVERPORT  = 9080
+
+}
+
+
+//------------------------------------------
+// PhidgetsEncoders configuration block
+
+ProcessConfig = PhidgetsEncoders
+{
+	CommsTick  = 100
+	AppTick    = 100
+	MaxAppTick = 1000
+	
+	// (Default="ENC1") Encoder data from this board will be published as "<ENCODER_PUBLISH_PREFIX>_CH_{COUNT,INSTANT_VEL}" with i=0,1,2,3 for each encoder channel.
+	ENCODER_PUBLISH_PREFIX	 = ENC1
+	
+	// (Default=-1) The serial number of the Phidgets encoder: the number in the "S/N" sticker (or "-1" to open the first board found).
+	// ENCODER_SERIAL	 = -1
+
+	// (Default=10) Number of samples for the sliding window average filter of speeds.	
+	SPEED_FILTER_SAMPLES_LEN  = 10
+}
+

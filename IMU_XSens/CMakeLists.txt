@@ -1,0 +1,17 @@
+# File: CMakeListst.txt for module IMU_XSens
+PROJECT(IMU_XSens)
+
+# Use MRPT:
+FIND_PACKAGE( MRPT REQUIRED base hwdrivers)
+
+INCLUDE_DIRECTORIES( ${MOOS_INCLUDE_DIRS}  )
+LINK_DIRECTORIES( ${MOOS_LIBRARY_DIRS} )
+
+# Add executable
+ADD_EXECUTABLE( ${PROJECT_NAME}
+	main.cpp
+	CIMU_XSensApp.h CIMU_XSensApp.cpp
+	)
+
+# Link the executable
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MOOS_LIBRARIES} ${MRPT_LIBS} )
