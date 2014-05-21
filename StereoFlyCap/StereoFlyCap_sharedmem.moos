@@ -1,0 +1,158 @@
+
+ProcessConfig = ANTLER
+{
+	ExecutablePath		= /home/ual/code/ecar-build/bin/
+
+	MSBetweenLaunches 	= 200
+	
+	Run = StereoFlyCap  @       NewConsole=false
+	
+	Run = Claraquino  @       NewConsole=false
+}
+
+//------------------------------------------
+// Claraquino configuration block
+
+ProcessConfig = Claraquino
+{
+	CommsTick  = 10
+	AppTick    = 10
+
+	SERIAL_PORT = /dev/ttyClaraquino
+	SERIAL_PORT_BAUDRATE = 115200
+}
+
+
+//------------------------------------------
+// StereoFlyCap configuration block
+
+ProcessConfig = StereoFlyCap
+{
+	CommsTick  = 100
+	AppTick    = 100
+	MaxAppTick = 1000
+
+	// Output directory for image (temporary) files in externally-stored mrpt::utils::CImage
+	//IMAGES_DIR = StereoFlyCap_Images
+	// Only for Linux: use shared memory for temporary files:
+	IMAGES_DIR = /dev/shm/StereoFlyCap_Images
+	
+	// (Default=true) If true, will append date & time to the images dir name
+	IMAGES_DIR_APPEND_TIMEDATE  = false
+
+	// (default=false) If set to "true", image compression while serializing will be disabled (useful when saving to shared memory).	
+	// IMAGES_SKIP_COMPRESS = false
+	IMAGES_SKIP_COMPRESS = true
+	
+	// (Default=100) Max number of images in the temporary directory / shared memory
+	IMGS_QUEUE_MAX_LENGTH = 100
+
+	IMAGES_RATE  = 10    // Frequency of images synch signal (Hz)
+	
+	// A config file with the stereo calib data, in the format expected by mrpt::utils::TStereoCamera
+	CAM_CALIB_FILE = stereo_calib.ini
+	
+	
+	LIVE_RECTIFY          = true   // (Default:false) Whether to emit rectified images (true) or raw (false)
+	RECTIFY_ALPHA         = 1     // (Default=0.5) Like OpenCV's stereoRectify alpha parameter 
+	RECTIFY_ALIGN_CENTERS = true   // (Default=true) Make optical centers to coincide after rectify
+	RECTIFY_RESIZE        = [1024 768]  // (Default=""->no resize) Optional rectify and resize at once
+	
+
+	
+# =======================================================
+#  SENSOR: CameraFlyCap
+# =======================================================
+sensorLabel		= STEREO1
+
+grabber_type	    = flycap_stereo 
+preview_decimation  = 1
+preview_reduction   = 2 //4
+grab_decimation     = 1
+
+# For externaly stored images, the format of image files (default=jpg)
+# **** BMP FORMAT ONLY BECAUSE WE ARE SAVING TO SHARED MEMORY!! ****
+#external_images_format = jpg
+external_images_format = bmp
+
+
+# For externaly stored images: whether to spawn an independent process to save the image files.
+external_images_own_thread  = true
+
+# If external_images_own_thread=1, this changes the number of threads to launch
+#  to save image files. The default is determined from mrpt::system::getNumberOfProcessors()
+#  and should be OK unless you want to save processor time for other things.
+#external_images_own_thread_count = 2    // >=1
+
+# (Only when external_images_format=jpg): Optional parameter to set the JPEG compression quality:
+#external_images_jpeg_quality = 95    // [1-100]. Default: 95
+
+pose_x			= 0  // position on the robot (meters)
+pose_y			= 0
+pose_z			= 0
+pose_yaw		= -90	// Angles in degrees
+pose_pitch		= 0
+pose_roll		= -106
+
+# -------- FlyCapture specific parameters ------------------------
+# See docs for : mrpt::hwdrivers::TCaptureOptions_FlyCapture2
+# ----------------------------------------------------------------
+
+# ======= LEFT CAMERA ===========
+# Camera selection:
+#fcs_LEFT_camera_index = 0      // (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
+fcs_LEFT_open_by_guid = true    // (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid
+fcs_LEFT_camera_guid  = 63A8D3CE-B49580D6-004AED1C-DDE4EF14   // GUID of the camera to open, only when open_by_guid==true. Hexadecimal blocks separated by dashes ("-")
+
+# Camera settings:
+fcs_LEFT_videomode   =  VIDEOMODE_1280x960YUV422 // VIDEOMODE_1280x960RGB // (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
+fcs_LEFT_framerate   =   FRAMERATE_30        // (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
+fcs_LEFT_grabmode    = BUFFER_FRAMES // BUFFER_FRAMES       // (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
+fcs_LEFT_numBuffers  = 2                  // (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
+fcs_LEFT_grabTimeout = 5000                // (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
+
+fcs_LEFT_trigger_enabled = true // (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
+fcs_LEFT_trigger_polarity = 0      // (default=0) Refer to PGR docs.
+fcs_LEFT_trigger_source   = 0      // (default=0) Refer to PGR docs.
+fcs_LEFT_trigger_mode     = 0      // (default=0) Refer to PGR docs.
+
+fcs_LEFT_strobe_enabled   = false // (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs.
+#fcs_LEFT_strobe_source    = 1     // (default=0)  Refer to PGR docs.
+#fcs_LEFT_strobe_polarity  = 0     // (default=0)  Refer to PGR docs.
+#fcs_LEFT_strobe_delay     = 0.0   // (default=0.0) Delay in ms. Refer to PGR docs.
+#fcs_LEFT_strobe_duration  = 1.0   // (default=1.0) Pulse durationin ms. Refer to PGR docs.
+
+fcs_LEFT_shutter_auto     = true   // (default=true)
+fcs_LEFT_shutter_time_ms  = 3.0     // (default=4.0) Shutter time, if shutter_auto=false
+
+
+# ======= RIGHT CAMERA ===========
+# Camera selection:
+#fcs_RIGHT_camera_index = 0      // (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
+fcs_RIGHT_open_by_guid = true    // (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid
+fcs_RIGHT_camera_guid  =   B9862FD2-7AE0E03A-A6BC0321-16654DC9 // GUID of the camera to open, only when open_by_guid==true. Hexadecimal blocks separated by dashes ("-")
+
+# Camera settings:
+fcs_RIGHT_videomode   = VIDEOMODE_1280x960YUV422 // VIDEOMODE_1280x960RGB // (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
+fcs_RIGHT_framerate   =   FRAMERATE_30        // (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
+fcs_RIGHT_grabmode    = BUFFER_FRAMES // BUFFER_FRAMES       // (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
+fcs_RIGHT_numBuffers  = 2                  // (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
+fcs_RIGHT_grabTimeout = 5000                // (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
+
+fcs_RIGHT_trigger_enabled = true // (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
+fcs_RIGHT_trigger_polarity = 0      // (default=0) Refer to PGR docs.
+fcs_RIGHT_trigger_source   = 0      // (default=0) Refer to PGR docs.
+fcs_RIGHT_trigger_mode     = 0      // (default=0) Refer to PGR docs.
+
+fcs_RIGHT_strobe_enabled   = false // (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs.
+#fcs_RIGHT_strobe_source    = 1     // (default=0)  Refer to PGR docs.
+#fcs_RIGHT_strobe_polarity  = 0     // (default=0)  Refer to PGR docs.
+#fcs_RIGHT_strobe_delay     = 0.0   // (default=0.0) Delay in ms. Refer to PGR docs.
+#fcs_RIGHT_strobe_duration  = 1.0   // (default=1.0) Pulse durationin ms. Refer to PGR docs.
+
+fcs_RIGHT_shutter_auto     = true   // (default=true)
+fcs_RIGHT_shutter_time_ms  = 3.0     // (default=4.0) Shutter time, if shutter_auto=false
+
+	
+}
+
