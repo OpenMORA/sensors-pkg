@@ -1,0 +1,29 @@
+ProcessConfig = ANTLER
+{
+	MSBetweenLaunches 	= 200
+	
+	Run = MOOSDB
+	Run = GenericSensor       @       NewConsole=false ~ GPS1
+}
+
+ProcessConfig = GPS1
+{
+	CommsTick = 10
+	AppTick = 10
+	
+	driver        = CGPSInterface
+	process_rate  = 10		// Hz
+	sensorLabel     = GPS_OBS
+
+	//COM_port_WIN = COM3
+	COM_port_WIN = COM5 
+	COM_port_LIN = ttyUSB2
+
+	baudRate     = 9600   // The baudrate of the communications (typ. 4800 bauds)
+
+	pose_x			= 0	   // Sensor position in the robot (meters)
+	pose_y			= 0
+	pose_z			= 0
+
+}
+
