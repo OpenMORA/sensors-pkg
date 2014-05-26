@@ -22,7 +22,6 @@ MORA_COMMON_CMAKE() # Set common CMake options
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${${PROJECT_NAME}_SOURCE_DIR}/cmakemodules")
 
 # Add modules (dir names match modules' by default)
-DEFINE_MORA_PROGRAM(Claraquino)
 DEFINE_MORA_PROGRAM(GenericSensor)
 DEFINE_MORA_PROGRAM(IMU_XSens)
 DEFINE_MORA_PROGRAM(NIDAQ)
