@@ -1,25 +1,11 @@
 /* +---------------------------------------------------------------------------+
    |                 Open MORA (MObile Robot Arquitecture)                     |
-   |                  University of Almeria ARM-eCar module                    |
-   |                                                                           |
-   |   Copyright (C) 2014  University of Almeria                               |
    +---------------------------------------------------------------------------+ */
 
-#include "CPhidgetsEncoders.h"
+#include "CPhidgetsEncoders.h" // User C++ app class 
 
-int main(int argc ,char * argv[])
-{
-    const char * sMissionFile = "Mission.moos";
-    const char * sMOOSName = "PhidgetsEncoders";
-    switch(argc)
-    {
-    case 3:
-        sMOOSName = argv[2];
-    case 2:
-        sMissionFile = argv[1];
-    }
+#define MORA_APP_CLASS         CPhidgetsEncoders     
+#define MORA_APP_NAME          "PhidgetsEncoders"    // Default MOOSApp app name
 
-    CPhidgetsEncoders TheApp;
-    TheApp.Run(sMOOSName,sMissionFile);
-    return 0;
-}
+#include <mora_main.h>
+
