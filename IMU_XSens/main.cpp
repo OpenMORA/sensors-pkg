@@ -2,8 +2,6 @@
    |                 Open MORA (MObile Robot Arquitecture)                     |
    +---------------------------------------------------------------------------+ */
 
-#include "CIMU_XSensApp.h" // User C++ app class 
-
 #define MORA_APP_CLASS         CIMU_XSensApp     
 #define MORA_APP_NAME          "IMU_XSens"    // Default MOOSApp app name
 
