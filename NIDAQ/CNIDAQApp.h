@@ -35,5 +35,8 @@ protected:
 
 	mrpt::hwdrivers::CNationalInstrumentsDAQ  m_daq;
 
+	std::map<std::string,size_t> m_varnames_ao; //!< MOOS var names of taks for async analog output, mapped to their task index
+	std::map<std::string,size_t> m_varnames_do; //!< MOOS var names of taks for async digital output, mapped to their task index
+
 };
 #endif

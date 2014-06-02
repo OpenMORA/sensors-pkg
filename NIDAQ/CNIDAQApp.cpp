@@ -6,7 +6,9 @@
    +---------------------------------------------------------------------------+ */
 
 /**  @moos_module NationalInstruments DAQ module. 
-  *  The config file must be include a configuration block as expected by mrpt::hwdrivers::CIMUXSens_MT4 (similar to rawlog-grabber)
+  *  The config file must be include a configuration block as expected by mrpt::hwdrivers::CNationalInstrumentsDAQ (similar to rawlog-grabber)
+  *  Analog inputs are gathered synchronously and published as binary observations and also (decimated) as individual MOOS double variables. 
+  *  Analog and digital asynchronous outputs are supported via individual MOOS double variables.
   */
 
 #include "CNIDAQApp.h"
@@ -32,6 +34,12 @@ CNIDAQApp::~CNIDAQApp()
 
 bool CNIDAQApp::OnStartUp()
 {
+	// If want a different mode than standard:
+	// - REGULAR_ITERATE_AND_MAIL
+	// - COMMS_DRIVEN_ITERATE_AND_MAIL
+	// - REGULAR_ITERATE_AND_COMMS_DRIVEN_MAIL
+	SetIterateMode(REGULAR_ITERATE_AND_COMMS_DRIVEN_MAIL);
+
 	try 
 	{
 		m_daq.loadConfig(m_ini, "");
@@ -41,6 +49,34 @@ bool CNIDAQApp::OnStartUp()
 	{
 		MOOSTrace("*ERROR*:\n%s\n", e.what());
 		return false;
+	}
+
+	m_varnames_ao.clear();
+	m_varnames_do.clear();
+
+	for (unsigned int i=0;i<m_daq.task_definitions.size();i++)
+	{
+		const mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription &t = m_daq.task_definitions[i];
+
+		// Subscribe to analog outputs:
+		//!  @moos_var DAQ_AO_TASK{i}  NI DAQ Analog outputs (AOUT) voltage for the i'th *task* (0-based, in the order specified in the .moos file)
+		//!  @moos_subscribe DAQ_AO_TASK{i}
+		if (t.has_ao) 
+		{
+			const string sVar = mrpt::format("DAQ_AO_TASK%u",i);
+			m_Comms.Register( sVar );
+			m_varnames_ao[sVar] = i;
+		}
+
+		// Subscribe to digital outputs:
+		//!  @moos_var DAQ_DO_TASK{i}  NI DAQ digital outputs (DOUT) for the i'th *task* (0-based, in the order specified in the .moos file). 0 => false, !=0 => true
+		//!  @moos_subscribe DAQ_DO_TASK{i}
+		if (t.has_do)
+		{
+			const string sVar = mrpt::format("DAQ_DO_TASK%u",i);
+			m_Comms.Register( sVar );
+			m_varnames_do[sVar] = i;
+		}
 	}
 
 	return DoRegistrations();
@@ -155,6 +191,50 @@ bool CNIDAQApp::DoRegistrations()
 
 bool CNIDAQApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+	try
+	{
+		// Process asynchronous outputs:
+		for (MOOSMSG_LIST::const_iterator it=NewMail.begin();it!=NewMail.end();++it)
+		{
+			const string sVar = it->GetName();
+
+			// Analog outputs:
+			for (map<string,size_t>::const_iterator itM=m_varnames_ao.begin();itM!=m_varnames_ao.end();++itM)
+			{
+				if (itM->first==sVar)
+				{
+					const size_t taskIdx = itM->second;
+					const double val = it->GetDouble();
+
+					m_daq.writeAnalogOutputTask(taskIdx,1, &val ,0.1, true);
+					break;
+				}
+			}
+			
+			// Analog outputs:
+			for (map<string,size_t>::const_iterator itM=m_varnames_do.begin();itM!=m_varnames_do.end();++itM)
+			{
+				if (itM->first==sVar)
+				{
+					const size_t taskIdx = itM->second;
+					const bool val = it->GetDouble() != 0.0;
+
+					m_daq.writeDigitalOutputTask(taskIdx,val, 0.1);
+					break;
+				}
+			}
+
+		} // end for each message
+
+	}
+	catch(std::exception &e) {
+		std::cerr << "[NIDAQ] Exception: " << e.what() << std::endl;
+	}
+	catch(...) {
+		std::cerr << "[NIDAQ] Untyped exception!\n";
+	}
+
+
 	UpdateMOOSVariables(NewMail);
 	UpdateMOOSVariables_OpenMORA(NewMail);
 	return true;
