@@ -59,21 +59,23 @@ bool CNIDAQApp::OnStartUp()
 		const mrpt::hwdrivers::CNationalInstrumentsDAQ::TaskDescription &t = m_daq.task_definitions[i];
 
 		// Subscribe to analog outputs:
-		//!  @moos_var DAQ_AO_TASK{i}  NI DAQ Analog outputs (AOUT) voltage for the i'th *task* (0-based, in the order specified in the .moos file)
+		//!  @moos_var DAQ_AO_TASK{i}  NI DAQ Analog outputs (AOUT) voltage for the i'th *task* of this kind (0-based, in the order specified in the .moos file)
 		//!  @moos_subscribe DAQ_AO_TASK{i}
 		if (t.has_ao) 
 		{
-			const string sVar = mrpt::format("DAQ_AO_TASK%u",i);
+			const unsigned int new_idx = m_varnames_ao.size();
+			const string sVar = mrpt::format("DAQ_AO_TASK%u",new_idx);
 			m_Comms.Register( sVar );
 			m_varnames_ao[sVar] = i;
 		}
 
 		// Subscribe to digital outputs:
-		//!  @moos_var DAQ_DO_TASK{i}  NI DAQ digital outputs (DOUT) for the i'th *task* (0-based, in the order specified in the .moos file). 0 => false, !=0 => true
+		//!  @moos_var DAQ_DO_TASK{i}  NI DAQ digital outputs (DOUT) for the i'th *task* of this kind (0-based, in the order specified in the .moos file). 0 => false, !=0 => true
 		//!  @moos_subscribe DAQ_DO_TASK{i}
 		if (t.has_do)
 		{
-			const string sVar = mrpt::format("DAQ_DO_TASK%u",i);
+			const unsigned int new_idx = m_varnames_ao.size();
+			const string sVar = mrpt::format("DAQ_DO_TASK%u",new_idx);
 			m_Comms.Register( sVar );
 			m_varnames_do[sVar] = i;
 		}
