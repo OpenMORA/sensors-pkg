@@ -74,7 +74,7 @@ bool CNIDAQApp::OnStartUp()
 		//!  @moos_subscribe DAQ_DO_TASK{i}
 		if (t.has_do)
 		{
-			const unsigned int new_idx = m_varnames_ao.size();
+			const unsigned int new_idx = m_varnames_do.size();
 			const string sVar = mrpt::format("DAQ_DO_TASK%u",new_idx);
 			m_Comms.Register( sVar );
 			m_varnames_do[sVar] = i;
