@@ -36,19 +36,17 @@
   */
 
 #include "CGenericSensor.h"
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/math/ops_containers.h>
-
 #include <sstream>
 #include <iomanip>
 #include <iostream>
-#include <mrpt/math/ops_containers.h>
+
 
 using namespace std;
-
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 

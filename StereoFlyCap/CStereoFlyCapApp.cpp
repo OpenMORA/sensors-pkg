@@ -25,20 +25,20 @@
 using namespace std;
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 
-void hook_rectify(const mrpt::slam::CObservationPtr &o, void* user_ptr)
+void hook_rectify(const mrpt::obs::CObservationPtr &o, void* user_ptr)
 {
 	CStereoFlyCapApp *me = reinterpret_cast<CStereoFlyCapApp*>(user_ptr);
 
-	using mrpt::slam::CObservationStereoImages;
+	using mrpt::obs::CObservationStereoImages;
 	if (o->GetRuntimeClass()!=CLASS_ID(CObservationStereoImages))
 		return; // WTF!? Just in case...
 
-	mrpt::slam::CObservationStereoImagesPtr obs = mrpt::slam::CObservationStereoImagesPtr(o);
+	mrpt::obs::CObservationStereoImagesPtr obs = mrpt::obs::CObservationStereoImagesPtr(o);
 
 	if (!me->m_live_rectify)
 		return;

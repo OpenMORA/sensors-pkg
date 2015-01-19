@@ -10,19 +10,17 @@
   */
 
 #include "CIMU_XSensApp.h"
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 #include <sstream>
 #include <iomanip>
 #include <iostream>
 
 using namespace std;
-
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
 
 
 CIMU_XSensApp::CIMU_XSensApp() 

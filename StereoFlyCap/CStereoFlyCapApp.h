@@ -12,14 +12,14 @@
 
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
-void hook_rectify(const mrpt::slam::CObservationPtr &o, void* user_ptr);
+void hook_rectify(const mrpt::obs::CObservationPtr &o, void* user_ptr);
 
 class CStereoFlyCapApp : public COpenMORAApp
 {
-	friend void hook_rectify(const mrpt::slam::CObservationPtr &o, void* user_ptr);
+	friend void hook_rectify(const mrpt::obs::CObservationPtr &o, void* user_ptr);
 
 public:
     CStereoFlyCapApp();
@@ -60,7 +60,7 @@ protected:
 	mrpt::vision::CStereoRectifyMap m_rectifier;
 
 	/** The list of imgs already sent to the DB, to be deleted in a while, to give time to other modules to grab the imgs if needed */
-	std::list<mrpt::slam::CObservationStereoImagesPtr> m_imgs_queue;
+	std::list<mrpt::obs::CObservationStereoImagesPtr> m_imgs_queue;
 
 	void purgeStereoExternalImgs(size_t nImgsToLeaveInQueue = 0); //!< Clear all remaining imgs in m_imgs_queue and their external files.
 
