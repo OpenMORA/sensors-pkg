@@ -33,6 +33,7 @@ protected:
 	bool DoRegistrations();
 
 	// DATA. Your local variables here...
+	std::string m_publish_prefix; //!< .moos parameter "PUBLISH_PREFIX" (Default: "IMU")
 
 	mrpt::hwdrivers::CIMUXSens_MT4  m_imu;
 

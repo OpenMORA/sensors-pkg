@@ -23,7 +23,8 @@ using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 
-CIMU_XSensApp::CIMU_XSensApp() 
+CIMU_XSensApp::CIMU_XSensApp() :
+    m_publish_prefix("IMU")
 {
 }
 
@@ -33,10 +34,13 @@ CIMU_XSensApp::~CIMU_XSensApp()
 
 bool CIMU_XSensApp::OnStartUp()
 {
-	try 
+	try
 	{
+	    m_publish_prefix = m_ini.read_string("","PUBLISH_PREFIX",m_publish_prefix);
+
+
 		m_imu.loadConfig(m_ini, "");
-		m_imu.initialize();	
+		m_imu.initialize();
 	}
 	catch (std::exception &e)
 	{
@@ -61,7 +65,7 @@ bool CIMU_XSensApp::OnCommandMsg( CMOOSMsg Msg )
 	return true;
 }
 
-// Main module loop code. 
+// Main module loop code.
 bool CIMU_XSensApp::Iterate()
 {
 	try
@@ -73,7 +77,7 @@ bool CIMU_XSensApp::Iterate()
 		MOOSTrace("*ERROR*:\n%s\n", e.what());
 		return false;
 	}
-		
+
 	mrpt::hwdrivers::CGenericSensor::TListObservations lstObjs;
 	m_imu.getObservations(lstObjs);
 
@@ -89,38 +93,38 @@ bool CIMU_XSensApp::Iterate()
 	mrpt::utils::ObjectToOctetVector(obs.pointer(), bObs);
 
 	//!  @moos_var     IMU_OBS  IMU readings as binary serializations of "CObservationIMU" passed to std::vector<uint8_t> through ObjectToOctetVector()
-	m_Comms.Notify("IMU_OBS", bObs );
-	
+	m_Comms.Notify(m_publish_prefix+std::string("_OBS"), bObs );
+
 
 	// Also publish numeric values of the IMU for the convenience of users:
 
 	//!  @moos_var     IMU_ACC_X  Acceleration in X (m/s^2)
-	if (obs->dataIsPresent[IMU_X_ACC]) m_Comms.Notify("IMU_ACC_X", obs->rawMeasurements[IMU_X_ACC] );
+	if (obs->dataIsPresent[IMU_X_ACC]) m_Comms.Notify( m_publish_prefix+std::string("_ACC_X"), obs->rawMeasurements[IMU_X_ACC] );
 	//!  @moos_var     IMU_ACC_Y  Acceleration in Y (m/s^2)
-	if (obs->dataIsPresent[IMU_Y_ACC]) m_Comms.Notify("IMU_ACC_Y", obs->rawMeasurements[IMU_Y_ACC] );
+	if (obs->dataIsPresent[IMU_Y_ACC]) m_Comms.Notify(m_publish_prefix+std::string("_ACC_Y"), obs->rawMeasurements[IMU_Y_ACC] );
 	//!  @moos_var     IMU_ACC_Z  Acceleration in Z (m/s^2)
-	if (obs->dataIsPresent[IMU_Z_ACC]) m_Comms.Notify("IMU_ACC_Z", obs->rawMeasurements[IMU_Z_ACC] );
+	if (obs->dataIsPresent[IMU_Z_ACC]) m_Comms.Notify(m_publish_prefix+std::string("_ACC_Z"), obs->rawMeasurements[IMU_Z_ACC] );
 
 	//!  @moos_var     IMU_YAW_VEL Yaw (Z) angular velocity (rad/sec)
-	if (obs->dataIsPresent[IMU_YAW_VEL]) m_Comms.Notify("IMU_YAW_VEL", obs->rawMeasurements[IMU_YAW_VEL] );
+	if (obs->dataIsPresent[IMU_YAW_VEL]) m_Comms.Notify(m_publish_prefix+std::string("_YAW_VEL"), obs->rawMeasurements[IMU_YAW_VEL] );
 	//!  @moos_var     IMU_PITCH_VEL Pitch (Y) angular velocity (rad/sec)
-	if (obs->dataIsPresent[IMU_PITCH_VEL]) m_Comms.Notify("IMU_PITCH_VEL", obs->rawMeasurements[IMU_PITCH_VEL] );
+	if (obs->dataIsPresent[IMU_PITCH_VEL]) m_Comms.Notify(m_publish_prefix+std::string("_PITCH_VEL"), obs->rawMeasurements[IMU_PITCH_VEL] );
 	//!  @moos_var     IMU_ROLL_VEL Roll (X) angular velocity (rad/sec)
-	if (obs->dataIsPresent[IMU_ROLL_VEL]) m_Comms.Notify("IMU_ROLL_VEL", obs->rawMeasurements[IMU_ROLL_VEL] );
+	if (obs->dataIsPresent[IMU_ROLL_VEL]) m_Comms.Notify(m_publish_prefix+std::string("_ROLL_VEL"), obs->rawMeasurements[IMU_ROLL_VEL] );
 
 	//!  @moos_var     IMU_YAW Yaw (Z) absolute value (rad)
-	if (obs->dataIsPresent[IMU_YAW]) m_Comms.Notify("IMU_YAW", obs->rawMeasurements[IMU_YAW] );
+	if (obs->dataIsPresent[IMU_YAW]) m_Comms.Notify(m_publish_prefix+std::string("_YAW"), obs->rawMeasurements[IMU_YAW] );
 	//!  @moos_var     IMU_PITCH Pitch (Y) absolute value (rad)
-	if (obs->dataIsPresent[IMU_PITCH]) m_Comms.Notify("IMU_PITCH", obs->rawMeasurements[IMU_PITCH] );
+	if (obs->dataIsPresent[IMU_PITCH]) m_Comms.Notify(m_publish_prefix+std::string("_PITCH"), obs->rawMeasurements[IMU_PITCH] );
 	//!  @moos_var     IMU_ROLL Roll (X) absolute value (rad)
-	if (obs->dataIsPresent[IMU_ROLL]) m_Comms.Notify("IMU_ROLL", obs->rawMeasurements[IMU_ROLL] );
+	if (obs->dataIsPresent[IMU_ROLL]) m_Comms.Notify(m_publish_prefix+std::string("_ROLL"), obs->rawMeasurements[IMU_ROLL] );
 
 	//!  @moos_var     IMU_MAG_X  X magnetic field value (gauss)
-	if (obs->dataIsPresent[IMU_MAG_X]) m_Comms.Notify("IMU_MAG_X", obs->rawMeasurements[IMU_MAG_X] );
+	if (obs->dataIsPresent[IMU_MAG_X]) m_Comms.Notify(m_publish_prefix+std::string("_MAG_X"), obs->rawMeasurements[IMU_MAG_X] );
 	//!  @moos_var     IMU_MAG_Y  Y magnetic field value (gauss)
-	if (obs->dataIsPresent[IMU_MAG_Y]) m_Comms.Notify("IMU_MAG_Y", obs->rawMeasurements[IMU_MAG_Y] );
+	if (obs->dataIsPresent[IMU_MAG_Y]) m_Comms.Notify(m_publish_prefix+std::string("_MAG_Y"), obs->rawMeasurements[IMU_MAG_Y] );
 	//!  @moos_var     IMU_MAG_Z  Z magnetic field value (gauss)
-	if (obs->dataIsPresent[IMU_MAG_Z]) m_Comms.Notify("IMU_MAG_Z", obs->rawMeasurements[IMU_MAG_Z] );
+	if (obs->dataIsPresent[IMU_MAG_Z]) m_Comms.Notify(m_publish_prefix+std::string("_MAG_Z"), obs->rawMeasurements[IMU_MAG_Z] );
 
 	return true;
 }
